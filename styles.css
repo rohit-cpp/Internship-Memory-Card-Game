@@ -1,0 +1,113 @@
+/* === General Styling === */
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #667eea, #764ba2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* === Main Game Container === */
+.game-container {
+  background: #fff;
+  padding: 20px 30px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  max-width: 720px;
+  width: 100%;
+  text-align: center;
+}
+
+/* === Header === */
+h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* === Game Controls (Moves, Time, Score, Button) === */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+#stats p {
+  margin: 4px 0;
+  color: #555;
+}
+
+button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+
+/* === Game Grid === */
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 16px;
+}
+
+/* === Card Styling === */
+.card {
+  background-color: #e0e0e0;
+  height: 0;
+  padding-bottom: 100%; /* Maintain square aspect ratio */
+  position: relative;
+  border-radius: 8px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: background 0.3s;
+}
+
+/* Centering Emoji */
+.card-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  user-select: none;
+  pointer-events: none;
+  color: transparent; /* Hidden by default */
+}
+
+/* Reveal emoji when card is flipped */
+.card.revealed .card-content {
+  color: #000;
+}
+
+/* === Winning Message === */
+.end-message {
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  color: green;
+  display: none;
+}
+
+/* === Responsive Fixes === */
+@media (max-width: 600px) {
+  .controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

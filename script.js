@@ -1,109 +1,120 @@
-const emojis = ["🦁", "🐮", "🐶", "🐱", "🐹", "🐰", "🦜", "🐯"];
-let cardValues = [...emojis, ...emojis];
-let firstCard, secondCard;
-let lockBoard = false;
+// DOM elements
+const grid = document.getElementById("grid");
+const movesCounter = document.getElementById("moves");
+const timerDisplay = document.getElementById("timer");
+const scoreDisplay = document.getElementById("score");
+const newGameBtn = document.getElementById("new-game");
+const messageBox = document.getElementById("message");
+
+// Emoji set for pairs
+const emojis = ["🍕", "🍔", "🍟", "🌭", "🍿", "🥗", "🍣", "🍩"];
+
+let cards = [];
+let firstCard = null;
+let secondCard = null;
 let moves = 0;
-let matchedPairs = 0;
-let timer;
+let matched = 0;
+let timer = null;
 let seconds = 0;
 
-const grid = document.getElementById("card-grid");
-const movesDisplay = document.getElementById("moves");
-const timerDisplay = document.getElementById("timer");
-const newGameBtn = document.getElementById("new-game");
-const message = document.getElementById("congrats-message");
-
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
+// Shuffle array using Fisher-Yates algorithm
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
+  return arr;
 }
 
-function startTimer() {
-  clearInterval(timer);
+// Start or reset the game
+function startGame() {
+  grid.innerHTML = "";
+  messageBox.style.display = "none";
+
+  cards = shuffleArray([...emojis, ...emojis]); // Duplicate and shuffle emojis
+  moves = 0;
+  matched = 0;
   seconds = 0;
+  clearInterval(timer);
+
   timer = setInterval(() => {
     seconds++;
-    timerDisplay.textContent = `Time: ${seconds}s`;
+    timerDisplay.textContent = seconds;
+    updateScore();
   }, 1000);
-}
 
-function resetGame() {
-  shuffle(cardValues);
-  grid.innerHTML = "";
-  moves = 0;
-  matchedPairs = 0;
-  lockBoard = false;
-  movesDisplay.textContent = "Moves: 0";
-  message.style.display = "none";
-  clearInterval(timer);
-  timerDisplay.textContent = "Time: 0s";
+  movesCounter.textContent = moves;
+  updateScore();
 
-  for (let value of cardValues) {
+  // Create card elements
+  cards.forEach((emoji, index) => {
     const card = document.createElement("div");
-    card.classList.add("card");
-    card.innerHTML = `
-      <div class="card-inner">
-        <div class="card-front"></div>
-        <div class="card-back">${value}</div>
-      </div>
-    `;
-    card.addEventListener("click", flipCard);
+    card.className = "card";
+    card.dataset.emoji = emoji;
+    card.dataset.index = index;
+
+    card.innerHTML = `<div class="card-content">${emoji}</div>`;
+    card.addEventListener("click", handleCardClick);
+
     grid.appendChild(card);
-  }
-  startTimer();
+  });
 }
 
-function flipCard() {
-  if (lockBoard) return;
-  if (this === firstCard) return;
+// Handle card clicks and matching logic
+function handleCardClick(e) {
+  const clicked = e.currentTarget;
 
-  this.classList.add("flipped");
+  // Prevent clicking same card or when 2 cards are already flipped
+  if (clicked.classList.contains("revealed") || secondCard) return;
+
+  clicked.classList.add("revealed");
 
   if (!firstCard) {
-    firstCard = this;
+    firstCard = clicked;
     return;
   }
 
-  secondCard = this;
+  secondCard = clicked;
   moves++;
-  movesDisplay.textContent = `Moves: ${moves}`;
+  movesCounter.textContent = moves;
+  updateScore();
 
-  const firstValue = firstCard.querySelector(".card-back").textContent;
-  const secondValue = secondCard.querySelector(".card-back").textContent;
+  // Check for match
+  if (firstCard.dataset.emoji === secondCard.dataset.emoji) {
+    matched++;
+    firstCard = null;
+    secondCard = null;
 
-  if (firstValue === secondValue) {
-    disableCards();
-    matchedPairs++;
-    if (matchedPairs === emojis.length) {
-      clearInterval(timer);
-      message.style.display = "block";
-    }
+    if (matched === emojis.length) endGame();
   } else {
-    unflipCards();
+    // No match: flip cards back after short delay
+    setTimeout(() => {
+      firstCard.classList.remove("revealed");
+      secondCard.classList.remove("revealed");
+      firstCard = null;
+      secondCard = null;
+    }, 1000);
   }
 }
 
-function disableCards() {
-  firstCard.removeEventListener("click", flipCard);
-  secondCard.removeEventListener("click", flipCard);
-  resetBoard();
+// When all pairs are matched
+function endGame() {
+  clearInterval(timer);
+  const score = calculateScore();
+  messageBox.style.display = "block";
+  messageBox.textContent = `🎉 You matched all cards in ${moves} moves and ${seconds}s! Your score: ${score}`;
 }
 
-function unflipCards() {
-  lockBoard = true;
-  setTimeout(() => {
-    firstCard.classList.remove("flipped");
-    secondCard.classList.remove("flipped");
-    resetBoard();
-  }, 1000);
+// Scoring formula
+function calculateScore() {
+  return Math.max(1000 - moves * 10 - seconds * 5, 0);
 }
 
-function resetBoard() {
-  [firstCard, secondCard] = [null, null];
-  lockBoard = false;
+// Update score display
+function updateScore() {
+  scoreDisplay.textContent = calculateScore();
 }
 
-newGameBtn.addEventListener("click", resetGame);
-window.addEventListener("DOMContentLoaded", resetGame);
+// Event listeners
+newGameBtn.addEventListener("click", startGame);
+window.addEventListener("DOMContentLoaded", startGame);

@@ -3,24 +3,30 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Memory Card Game</title>
-    <link rel="stylesheet" href="style.css" />
+    <title>Memory Card Game (Alt Version)</title>
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div class="game-container">
-      <div class="header">
-        <h1>Memory Card Game</h1>
-        <div class="stats">
-          <span id="moves">Moves: 0</span>
-          <span id="timer">Time: 0s</span>
-          <button id="new-game">New Game</button>
+      <h1>🧠 Memory Match Game</h1>
+
+      <!-- Game stats and button -->
+      <div class="controls">
+        <div id="stats">
+          <p>Moves: <span id="moves">0</span></p>
+          <p>Time: <span id="timer">0</span>s</p>
+          <p>Score: <span id="score">1000</span></p>
         </div>
+        <button id="new-game">🔄 Start New Game</button>
       </div>
-      <div class="grid" id="card-grid"></div>
-      <div class="message" id="congrats-message">
-        🎉 Congratulations! You've matched all pairs! 🎉
-      </div>
+
+      <!-- Grid for cards -->
+      <div class="game-grid" id="grid"></div>
+
+      <!-- Message shown on win -->
+      <div class="end-message" id="message"></div>
     </div>
+
     <script src="script.js"></script>
   </body>
 </html>
